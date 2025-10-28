@@ -1,0 +1,415 @@
+# sort.py
+'''
+存储所有的排序算法。
+'''
+import math
+import random
+from tracked_array import TrackedArray
+
+def QuickSort(arr, low, high):
+    '''
+    快速排序。
+    原理为分区排序：将每次的arr[low: high+1]变成两个分区，取某个数为基准，大于这个基准的数放到基准右端，小于这个基准的数放到基准左端。
+    每次分区结束之后，在对子分区进行同样的处理。
+    '''
+    def partition(arr, low, high):
+        i = (low - 1)
+        pivot = arr[high]
+        for j in range(low, high):
+            if arr[j] <= pivot:
+                i = i + 1
+                arr[i], arr[j] = arr[j], arr[i]
+        arr[i + 1], arr[high] = arr[high], arr[i + 1]
+        return (i + 1)
+
+    if low < high:
+        pi = partition(arr, low, high)
+        QuickSort(arr, low, pi - 1)
+        QuickSort(arr, pi + 1, high)
+
+
+def BubbleSort(arr):
+    '''
+    冒泡排序。
+    原理为：比较两个相邻的数，将大的移到右侧。
+    '''
+    n = len(arr)
+    for i in range(n - 1):
+        for j in range(0, n - i - 1):
+            if arr[j] > arr[j+1]:
+                arr[j], arr[j+1] = arr[j+1], arr[j]
+    return arr
+
+
+def ImprovedBubbleSort(arr):
+    '''
+    改进的冒泡排序。
+    原理为：比较两个相邻的数，将大的移到右侧。
+    当一轮结束后没有交换时，结束排序。
+    '''
+    n = len(arr)
+    for i in range(n - 1):
+        swapped = False
+        for j in range(0, n - i - 1):
+            if arr[j] > arr[j+1]:
+                arr[j], arr[j+1] = arr[j+1], arr[j]
+                swapped = True
+        if not swapped:
+            break
+    return arr
+
+
+def CocktailShakerSort(arr):
+    '''
+    鸡尾酒排序（Cocktail Shaker Sort），也叫双向冒泡排序。
+    原理为：在序列中从左到右和从右到左交替地进行冒泡排序。
+    第一轮从左到右，将最大的元素移动到最右侧；
+    下一轮从右到左，将最小的元素移动到最左侧。
+    如此往复，直到没有元素交换时排序完成。
+    '''
+    n = len(arr)
+    left = 0
+    right = n - 1
+    swapped = True
+    while swapped:
+        swapped = False
+        for i in range(left, right):
+            if arr[i] > arr[i+1]:
+                arr[i], arr[i+1] = arr[i+1], arr[i]
+                swapped = True
+        if not swapped:
+            break
+        right -= 1
+        swapped = False
+        for i in range(right, left, -1):
+            if arr[i] < arr[i-1]:
+                arr[i], arr[i-1] = arr[i-1], arr[i]
+                swapped = True
+        left += 1
+    return arr
+
+
+def SelectionSort(arr):
+    '''
+    选择排序。
+    原理为：找到当前序列的最小数字，放到序列首，然后序列往后伸缩一位。
+    '''
+    for i in range(len(arr) - 1):
+        minIndex = i
+        for j in range(i + 1, len(arr)):
+            if arr[j] < arr[minIndex]:
+                minIndex = j
+        if i != minIndex:
+            arr[i], arr[minIndex] = arr[minIndex], arr[i]
+    return arr
+
+
+def InsertionSort(arr):
+    '''
+    插入排序。
+    原理为：类似扑克牌一般，对每个找到的数，将其放到现有已经整理好的列表中合适的位置。
+    '''
+    for i in range(len(arr)):
+        preIndex = i-1
+        current = arr[i]
+        while preIndex >= 0 and arr[preIndex] > current:
+            arr[preIndex+1] = arr[preIndex]
+            preIndex-=1
+        arr[preIndex+1] = current
+    return arr
+
+
+def ShellSort(arr):
+    '''
+    希尔排序。
+    插入排序的改进版，将整体分解成数个子列表，每个子列表进行插入排序。
+    '''
+    gap=1
+    while(gap < len(arr)/3):
+        gap = gap*3+1
+    while gap > 0:
+        for i in range(gap,len(arr)):
+            temp = arr[i]
+            j = i-gap
+            while j >=0 and arr[j] > temp:
+                arr[j+gap]=arr[j]
+                j-=gap
+            arr[j+gap] = temp
+        gap = math.floor(gap/3)
+    return arr
+
+
+def MonkeySort(arr):
+    '''
+    猴子排序。
+    ？
+    '''
+    def is_sorted(arr):
+        for i in range(1, len(arr)):
+            if arr[i - 1] > arr[i]:
+                return False
+        return True
+    while not is_sorted(arr):
+        random.shuffle(arr)
+    return arr
+
+
+def CleverMonkeySort(arr):
+    '''
+    在人类指导下的猴子排序。
+    ？
+    '''
+    def where_cur(arr):
+        for i in range(cur, len(arr)):
+            for j in range(i + 1, len(arr)):
+                if arr[j] < arr[i]:
+                    return i
+        return -999
+    cur = 0
+    while (cur := where_cur(arr)) != -999:
+        i = random.randint(cur, len(arr) - 1)
+        j = random.randint(cur, len(arr) - 1)
+        while j == i:
+            j = random.randint(cur, len(arr) - 1)
+        arr[i], arr[j] = arr[j], arr[i]
+    return arr
+
+
+def MergeSort(arr):
+    '''
+    归并排序。
+    原理为：将整个区域通过不断地中部划分划分成数个小区域，然后将小区域中已经有序的数组拿出来再进行有序排列。
+    '''
+    def merge(arr, left, mid, right):
+        temp = TrackedArray([])
+        i = left
+        j = mid + 1
+        while i <= mid and j <= right:
+            if arr[i] < arr[j]:
+                temp.append(arr[i])
+                i += 1
+            else:
+                temp.append(arr[j])
+                j += 1
+        while i <= mid:
+            temp.append(arr[i])
+            i += 1
+        while j <= right:
+            temp.append(arr[j])
+            j += 1
+        for k in range(len(temp)):
+            arr[left + k] = temp[k]
+
+    def sort_range(arr, left, right):
+        if left >= right:
+            return
+        mid = (left + right) // 2
+        sort_range(arr, left, mid)
+        sort_range(arr, mid + 1, right)
+        merge(arr, left, mid, right)
+
+    if not arr:
+        return arr
+    sort_range(arr, 0, len(arr) - 1)
+    return arr
+
+
+def HeapSort(arr):
+    '''
+    堆排序。
+    原理为：将数组原地做一个堆，然后不断将最大的值放到堆顶，再将这个值与堆底交换，移出堆。重复直到排序完毕。
+    '''
+    def heapify(arr, n, i):
+        largest = i
+        left = 2 * i + 1
+        right = 2 * i + 2
+        if left < n and arr[left] > arr[largest]:
+            largest = left
+        if right < n and arr[right] > arr[largest]:
+            largest = right
+        if largest != i:
+            arr[i], arr[largest] = arr[largest], arr[i]
+            heapify(arr, n, largest)
+
+    n = len(arr)
+    for i in range(n // 2 - 1, -1, -1):
+        heapify(arr, n, i)
+    for i in range(n - 1, 0, -1):
+        arr[0], arr[i] = arr[i], arr[0]
+        heapify(arr, i, 0)
+    return arr
+
+
+def CountingSort(arr):
+    '''
+    计数排序。
+    空间占用量大的算法，会先列出一个列表，空间大小为max(arr)+1，然后将所有数组中的数字分配给对应位数，以此进行重排序。
+    '''
+    max_val = max(arr)
+    count = TrackedArray([0] * (max_val + 1))
+    for num in arr:
+        count[num] += 1
+    for i in range(1, len(count)):
+        count[i] += count[i - 1]
+    output = TrackedArray([0] * len(arr))
+    for num in reversed(arr):
+        output[count[num] - 1] = num
+        count[num] -= 1
+    for i in range(len(arr)):
+        arr[i] = output[i]
+    return arr
+
+
+def PigeonHoleSort(arr):
+    '''
+    鸽巢排序。
+    本质上是优化的计数排序，将新列出的列表的空间大小缩小到max(arr)-min(arr)+2。
+    '''
+    max_val = max(arr)
+    min_val = min(arr)
+    count = TrackedArray([0] * (max_val - min_val + 2))
+    for num in arr:
+        count[num - min_val] += 1
+    for i in range(1, len(count)):
+        count[i] += count[i - 1]
+    output = TrackedArray([0] * len(arr))
+    for num in reversed(arr):
+        output[count[num - min_val] - 1] = num
+        count[num - min_val] -= 1
+    for i in range(len(arr)):
+        arr[i] = output[i]
+    return arr
+
+
+def BucketSort(arr, bucket_size=10):
+    '''
+    桶排序。
+    类似计数排序，但列出的列表空间大小为(max(arr) - min(arr)) // bucketSize + 1，即将值相近的数字分进同一个桶中进行小排序（这里需要使用别的函数），然后再将所有桶放到一起。
+    这里使用了快速排序作为辅助排序。
+    '''
+    if len(arr) == 0:
+        return arr
+    min_val = min(arr)
+    max_val = max(arr)
+    bucket_count = (max_val - min_val) // bucket_size + 1
+    buckets = TrackedArray([TrackedArray([]) for _ in range(bucket_count)])
+    for num in arr:
+        index = int((num - min_val) // bucket_size)
+        buckets[index].append(num)
+    counter = 0
+    for bucket in buckets:
+        low = counter
+        for i in range(len(bucket)):
+            arr[counter] = bucket[i]
+            counter += 1
+        QuickSort(arr, low, counter - 1)
+    return arr
+
+
+def RadixSort(arr):
+    '''
+    基数排序。
+    基于位数的排序算法，先根据个位数排，再根据十位数排……以此类推。
+    '''
+    def radix_counting(arr, exp):
+        n = len(arr)
+        output = TrackedArray([0] * n)
+        count = TrackedArray([0] * 10)
+        for num in arr:
+            index = (num // exp) % 10
+            count[index] += 1
+        for i in range(1, 10):
+            count[i] += count[i - 1]
+        i = n - 1
+        while i >= 0:
+            index = (arr[i] // exp) % 10
+            output[count[index] - 1] = arr[i]
+            count[index] -= 1
+            i -= 1
+        for i in range(n):
+            arr[i] = output[i]
+            
+    max_num = max(arr)
+    exp = 1
+    while max_num // exp > 0:
+        radix_counting(arr, exp)
+        exp *= 10
+    return arr
+
+
+def TimSort(arr, min_merge = 32):
+    '''
+    Tim排序。
+    基于归并排序和插入排序的算法，会对大规模数组使用归并排序，小规模数组使用插入排序。
+    '''
+    def insertion_sort(arr, left, right):
+        for i in range(left + 1, right + 1):
+            key = arr[i]
+            j = i - 1
+            while j >= left and arr[j] > key:
+                arr[j + 1] = arr[j]
+                j -= 1
+            arr[j + 1] = key
+            
+    def merge(arr, l, m, r):
+        len1, len2 = m - l + 1, r - m
+        left = arr[l : l + len1]
+        right = arr[m + 1 : r + 1]
+        i, j, k = 0, 0, l
+        while i < len1 and j < len2:
+            if left[i] <= right[j]:
+                arr[k] = left[i]
+                i += 1
+            else:
+                arr[k] = right[j]
+                j += 1
+            k += 1
+        while i < len1:
+            arr[k] = left[i]
+            k += 1
+            i += 1
+        while j < len2:
+            arr[k] = right[j]
+            k += 1
+            j += 1
+
+    n = len(arr)
+    if n <= min_merge:
+        insertion_sort(arr, 0, n - 1)
+        return arr
+    for start in range(0, n, min_merge):
+        end = min(start + min_merge - 1, n - 1)
+        insertion_sort(arr, start, end)
+    size = min_merge
+    while size < n:
+        for left in range(0, n, 2 * size):
+            mid = min(n - 1, left + size - 1)
+            right = min((left + 2 * size - 1), (n - 1))
+            if mid < right:
+                merge(arr, left, mid, right)
+        size = 2 * size
+    return arr
+
+
+def BeadSort(arr):
+    '''
+    珠排序。
+    一种非常低效的排序算法，原理为创建一个二维数组，然后模拟现实中数珠子的模样进行排序。
+    '''
+    num_items = len(arr)
+    max_val = max(arr)
+    grid = TrackedArray([TrackedArray([0] * max_val) for _ in range(num_items)])
+    for i, num in enumerate(arr):
+        for j in range(num):
+            grid[i][j] = 1
+    for j in range(max_val):
+        bead_count_in_col = sum(grid[i][j] for i in range(num_items))
+        for i in range(num_items):
+            grid[i][j] = 0
+        for i in range(num_items - bead_count_in_col, num_items):
+            grid[i][j] = 1
+    sorted_arr = [sum(row) for row in grid]
+    for i in range(len(sorted_arr)):
+        arr[i] = sorted_arr[i]
+    return sorted_arr
+
