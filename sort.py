@@ -483,22 +483,34 @@ def StoogeSort(arr):
     def _stooge_sort_recursive(sub_arr, low, high):
         if low >= high:
             return
-
         if sub_arr[low] > sub_arr[high]:
             sub_arr[low], sub_arr[high] = sub_arr[high], sub_arr[low]
-
         if high - low + 1 > 2:
             t = (high - low + 1) // 3
-            
             _stooge_sort_recursive(sub_arr, low, high - t)
-            
             _stooge_sort_recursive(sub_arr, low + t, high)
-            
             _stooge_sort_recursive(sub_arr, low, high - t)
 
     if not arr:
         return arr
     _stooge_sort_recursive(arr, 0, len(arr) - 1)
     return arr
+
+def GnomeSort(arr):
+    '''
+    侏儒排序。
+    一种只有一个指针的算法，指针会从数列左往数列右移动，如果当前位大于前一位则继续往后，否则交换两位并回退。
+    '''
+    cur = 0
+    while cur <= len(arr) - 1:
+        if cur == 0 or arr[cur] > arr[cur-1]:
+            cur += 1
+        else:
+            arr[cur], arr[cur-1] = arr[cur-1], arr[cur]
+            cur -= 1
+    return arr
+
+
+
 
 
