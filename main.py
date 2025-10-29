@@ -75,20 +75,21 @@ def setup_screen(width=800, height=600, algorithms=None):
     array_input = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((70, 170), (660, 40)), manager=manager)
 
     pygame_gui.elements.UILabel(relative_rect=pygame.Rect((70, 230), (700, 30)), text="Or Randomly Generate (the generated array won't change if the parameters don't gain changed):", manager=manager)
-    pygame_gui.elements.UILabel(relative_rect=pygame.Rect((90, 260), (80, 30)), text="Size:", manager=manager)
-    size_input = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((170, 260), (100, 30)), manager=manager)
+    pygame_gui.elements.UILabel(relative_rect=pygame.Rect((70, 260), (500, 30)), text="(Hint: set `Max Value` to -1 will generate a no-repeat array):", manager=manager)
+    pygame_gui.elements.UILabel(relative_rect=pygame.Rect((90, 290), (80, 30)), text="Size:", manager=manager)
+    size_input = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((170, 290), (100, 30)), manager=manager)
     size_input.set_text(str(last_input[0]))
 
-    pygame_gui.elements.UILabel(relative_rect=pygame.Rect((290, 260), (80, 30)), text="Min Value:", manager=manager)
-    min_val_input = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((370, 260), (100, 30)), manager=manager)
+    pygame_gui.elements.UILabel(relative_rect=pygame.Rect((290, 290), (80, 30)), text="Min Value:", manager=manager)
+    min_val_input = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((370, 290), (100, 30)), manager=manager)
     min_val_input.set_text(str(last_input[1]))
 
-    pygame_gui.elements.UILabel(relative_rect=pygame.Rect((490, 260), (80, 30)), text="Max Value:", manager=manager)
-    max_val_input = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((570, 260), (100, 30)), manager=manager)
+    pygame_gui.elements.UILabel(relative_rect=pygame.Rect((490, 290), (80, 30)), text="Max Value:", manager=manager)
+    max_val_input = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((570, 290), (100, 30)), manager=manager)
     max_val_input.set_text(str(last_input[2]))
 
-    start_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((width // 2 - 100, 340), (200, 50)), text='Start Visualization', manager=manager)
-    message_label = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((50, 400), (700, 40)), text="", manager=manager)
+    start_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((width // 2 - 100, 370), (200, 50)), text='Start Visualization', manager=manager)
+    message_label = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((50, 430), (700, 40)), text="", manager=manager)
     message_label.set_text_alpha(0)
 
     while True:

@@ -68,19 +68,15 @@ def CombSort(arr):
     gap = n
     shrink = 1.3
     swapped = True
-
     while gap > 1 or swapped:
         gap = int(gap / shrink)
         if gap < 1:
             gap = 1
-
         swapped = False
-        
         for i in range(n - gap):
             if arr[i] > arr[i + gap]:
                 arr[i], arr[i + gap] = arr[i + gap], arr[i]
                 swapped = True
-    
     return arr
 
 
@@ -212,6 +208,7 @@ def MonkeySort(arr, seeds = None):
             if arr[i - 1] > arr[i]:
                 return False
         return True
+
     while not is_sorted(arr):
         if seeds:
             random.seed(seeds)
