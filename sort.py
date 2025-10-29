@@ -413,6 +413,7 @@ def BeadSort(arr):
         arr[i] = sorted_arr[i]
     return sorted_arr
 
+
 def PDQSort(arr):
     '''
     PDQ排序。
@@ -447,3 +448,57 @@ def PDQSort(arr):
                 quicksort(arr, pi + 1, high)
 
     quicksort(arr, 0, len(arr) - 1)
+
+
+def PancakeSort(arr):
+    '''
+    煎饼排序。
+    其核心思想是通过反复“翻转”数组的前缀部分来进行排序。在每一轮迭代中，算法会找到当前未排序部分中的最大元素，先通过一次翻转将其移动到数组的最顶端（索引0），然后再通过一次翻转将这个最大元素移动到它最终应该在的有序位置。这个过程不断重复，直到整个数组有序。
+    '''
+    def flip(sub_arr, k):
+        left = 0
+        while left < k - 1:
+            sub_arr[left], sub_arr[k - 1] = sub_arr[k - 1], sub_arr[left]
+            left += 1
+            k -= 1
+
+    n = len(arr)
+    for current_size in range(n, 1, -1):
+        max_index = 0
+        for i in range(current_size):
+            if arr[i] > arr[max_index]:
+                max_index = i
+        if max_index != current_size - 1:
+            if max_index != 0:
+                flip(arr, max_index + 1)
+            flip(arr, current_size)
+    return arr
+
+
+def StoogeSort(arr):
+    '''
+    臭皮匠排序 (Stooge Sort)。
+    这是一个极其低效的递归分治排序算法。其原理是将待排序的数组（或子数组）分为三个重叠的部分：前2/3和后2/3。算法首先确保首尾元素是正确的相对顺序（小的在前，大的在后），然后递归地：(1) 对前2/3进行排序；(2) 对后2/3进行排序；(3) 再次对前2/3进行排序，以确保在第二步中可能被移动到前段的元素被正确归位。这个过程会一直递归下去，直到子数组的长度小于3。
+    '''
+    def _stooge_sort_recursive(sub_arr, low, high):
+        if low >= high:
+            return
+
+        if sub_arr[low] > sub_arr[high]:
+            sub_arr[low], sub_arr[high] = sub_arr[high], sub_arr[low]
+
+        if high - low + 1 > 2:
+            t = (high - low + 1) // 3
+            
+            _stooge_sort_recursive(sub_arr, low, high - t)
+            
+            _stooge_sort_recursive(sub_arr, low + t, high)
+            
+            _stooge_sort_recursive(sub_arr, low, high - t)
+
+    if not arr:
+        return arr
+    _stooge_sort_recursive(arr, 0, len(arr) - 1)
+    return arr
+
+
