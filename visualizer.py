@@ -36,10 +36,10 @@ class Visualizer:
             text='Pause', manager=self.ui_manager
         )
         self.speed_buttons = {
-            '0.5x': pygame_gui.elements.UIButton(relative_rect=pygame.Rect((110, ui_height), (50, 30)), text='0.5x', manager=self.ui_manager),
-            '1x': pygame_gui.elements.UIButton(relative_rect=pygame.Rect((170, ui_height), (50, 30)), text='1x', manager=self.ui_manager),
-            '2x': pygame_gui.elements.UIButton(relative_rect=pygame.Rect((230, ui_height), (50, 30)), text='2x', manager=self.ui_manager),
-            '4x': pygame_gui.elements.UIButton(relative_rect=pygame.Rect((290, ui_height), (50, 30)), text='4x', manager=self.ui_manager),
+            '1x': pygame_gui.elements.UIButton(relative_rect=pygame.Rect((110, ui_height), (50, 30)), text='0.5x', manager=self.ui_manager),
+            '5x': pygame_gui.elements.UIButton(relative_rect=pygame.Rect((170, ui_height), (50, 30)), text='1x', manager=self.ui_manager),
+            '20x': pygame_gui.elements.UIButton(relative_rect=pygame.Rect((230, ui_height), (50, 30)), text='2x', manager=self.ui_manager),
+            '100x': pygame_gui.elements.UIButton(relative_rect=pygame.Rect((290, ui_height), (50, 30)), text='4x', manager=self.ui_manager),
         }
         pygame_gui.elements.UILabel(relative_rect=pygame.Rect((360, ui_height), (70, 30)), text="Custom:", manager=self.ui_manager)
         self.speed_input = pygame_gui.elements.UITextEntryLine(
@@ -133,7 +133,7 @@ class Visualizer:
                 if event.type == pygame_gui.UI_TEXT_ENTRY_FINISHED and event.ui_element == self.speed_input:
                     try:
                         custom_speed = float(event.text)
-                        speed_multiplier = max(0.1, min(100.0, custom_speed))
+                        speed_multiplier = max(0.1, min(1000.0, custom_speed))
                         self.speed_label.set_text(f"{speed_multiplier:.1f}x")
                         self.speed_input.set_text(str(speed_multiplier))
                     except ValueError:

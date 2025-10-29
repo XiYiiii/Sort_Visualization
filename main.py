@@ -28,7 +28,11 @@ def get_sorting_algorithms():
 def generate_random_array(n, min_val, max_val):
     global last_input, last_output, last_seed
     if last_input != [n, min_val, max_val] or not last_output:
-        last_output = [random.randint(min_val, max_val) for _ in range(n)]
+        if max_val == -1:
+            last_output = list(range(1, n + 1))
+            random.shuffle(last_output)
+        else:
+            last_output = [random.randint(min_val, max_val) for _ in range(n)]
         last_seed = math.sin(time())
     elif not last_seed:
         last_seed = math.sin(time())
@@ -110,7 +114,7 @@ def setup_screen(width=800, height=600, algorithms=None):
                             n = int(size_input.get_text())
                             min_val = int(min_val_input.get_text())
                             max_val = int(max_val_input.get_text())
-                            if n < 2 or min_val >= max_val or n > 100000:
+                            if n < 2 or (min_val >= max_val and not max_val == -1) or n > 100000:
                                 message_label.set_text("Error: Invalid parameters (Size > 1, Min < Max, Size <= 100000).")
                                 continue
                             arr = generate_random_array(n, min_val, max_val)

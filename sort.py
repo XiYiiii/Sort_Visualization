@@ -194,9 +194,6 @@ def LibrarySort(arr):
                 library[j] = library[j - 1]
         library[insert_pos] = element_to_insert
         filled_count += 1
-    # final_sorted = TrackedArray([x for x in library if x is not None])
-    # for i in range(n):
-    #     arr[i] = final_sorted[i]
     Counts = 0
     for x in library:
         if x is not None:
@@ -391,7 +388,7 @@ def PigeonHoleSort(arr):
     return arr
 
 
-def BucketSort(arr, bucket_size=10):
+def BucketSort(arr):
     '''
     桶排序。
     类似计数排序，但列出的列表空间大小为(max(arr) - min(arr)) // bucketSize + 1，即将值相近的数字分进同一个桶中进行小排序（这里需要使用别的函数），然后再将所有桶放到一起。
@@ -401,10 +398,12 @@ def BucketSort(arr, bucket_size=10):
         return arr
     min_val = min(arr)
     max_val = max(arr)
-    bucket_count = (max_val - min_val) // bucket_size + 1
-    buckets = TrackedArray([TrackedArray([]) for _ in range(bucket_count)])
+    bucket_size = 10
+    bucket_count = int((max_val - min_val) // bucket_size) + 1
+    buckets = TrackedArray([[] for _ in range(bucket_count)])
     for num in arr:
         index = int((num - min_val) // bucket_size)
+        print(num, min_val, index, int((num - min_val) // bucket_size))
         buckets[index].append(num)
     counter = 0
     for bucket in buckets:
@@ -447,7 +446,7 @@ def RadixSort(arr):
     return arr
 
 
-def TimSort(arr, min_merge = 32):
+def TimSort(arr):
     '''
     Tim排序。
     基于归并排序和插入排序的算法，会对大规模数组使用归并排序，小规模数组使用插入排序。
@@ -483,6 +482,7 @@ def TimSort(arr, min_merge = 32):
             k += 1
             j += 1
 
+    min_merge = 32
     n = len(arr)
     if n <= min_merge:
         insertion_sort(arr, 0, n - 1)
