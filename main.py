@@ -29,6 +29,7 @@ def generate_random_array(n, min_val, max_val):
     if last_input != [n, min_val, max_val] or not last_output:
         last_output = [random.randint(min_val, max_val) for _ in range(n)]
     last_input = [n, min_val, max_val]
+    print(last_output)
     return last_output
 
 def parse_user_array(text):
@@ -106,8 +107,8 @@ def setup_screen(width=800, height=600, algorithms=None):
                             n = int(size_input.get_text())
                             min_val = int(min_val_input.get_text())
                             max_val = int(max_val_input.get_text())
-                            if n < 2 or min_val >= max_val or n > 1000:
-                                message_label.set_text("Error: Invalid parameters (Size > 1, Min < Max, Size <= 1000).")
+                            if n < 2 or min_val >= max_val or n > 100000:
+                                message_label.set_text("Error: Invalid parameters (Size > 1, Min < Max, Size <= 100000).")
                                 continue
                             arr = generate_random_array(n, min_val, max_val)
                         except (ValueError, TypeError):

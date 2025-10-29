@@ -413,3 +413,37 @@ def BeadSort(arr):
         arr[i] = sorted_arr[i]
     return sorted_arr
 
+def PDQSort(arr):
+    '''
+    PDQ排序。
+    类似于TimSort，但对于大规模数组使用的是快速排序。
+    '''
+    def insertion_sort(arr, left, right):
+        for i in range(left + 1, right + 1):
+            key = arr[i]
+            j = i - 1
+            while j >= left and arr[j] > key:
+                arr[j + 1] = arr[j]
+                j -= 1
+            arr[j + 1] = key
+    
+    def partition(arr, low, high):
+        pivot = arr[high]
+        i = low - 1
+        for j in range(low, high):
+            if arr[j] <= pivot:
+                i += 1
+                arr[i], arr[j] = arr[j], arr[i]
+        arr[i + 1], arr[high] = arr[high], arr[i + 1]
+        return i + 1
+
+    def quicksort(arr, low, high):
+        if low < high:
+            if high - low <= 24:
+                insertion_sort(arr, low, high)
+            else:
+                pi = partition(arr, low, high)
+                quicksort(arr, low, pi - 1)
+                quicksort(arr, pi + 1, high)
+
+    quicksort(arr, 0, len(arr) - 1)
