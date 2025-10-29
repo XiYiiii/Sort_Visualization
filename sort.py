@@ -164,8 +164,6 @@ def ShellSort(arr):
     return arr
 
 
-
-
 def LibrarySort(arr):
     '''
     图书馆排序。
@@ -207,7 +205,7 @@ def LibrarySort(arr):
     return arr
 
 
-def MonkeySort(arr):
+def MonkeySort(arr, seeds = None):
     '''
     猴子排序。
     ？
@@ -218,11 +216,42 @@ def MonkeySort(arr):
                 return False
         return True
     while not is_sorted(arr):
+        if seeds:
+            random.seed(seeds)
+            seeds += 1
         random.shuffle(arr)
     return arr
 
 
-def CleverMonkeySort(arr):
+def LazyMonkeySort(arr, seeds = None):
+    '''
+    懒惰的猴子排序。
+    猴子一次只会移动一组数。
+    '''
+    def is_sorted(arr):
+        for i in range(1, len(arr)):
+            if arr[i - 1] > arr[i]:
+                return False
+        return True
+    
+    def get_random(cur, seeds = None):
+        if seeds:
+            random.seed(seeds)
+        return random.randint(cur, len(arr) - 1), seeds
+
+    cur = 0
+    while not is_sorted(arr):
+        i, newSeed = get_random(cur, seeds)
+        if newSeed:
+            seeds += 1
+        j, newSeed = get_random(cur, seeds)
+        if newSeed:
+            seeds += 1
+        arr[i], arr[j] = arr[j], arr[i]
+    return arr
+
+
+def CleverMonkeySort(arr, seeds = None):
     '''
     在人类指导下的猴子排序。
     ？
@@ -233,12 +262,25 @@ def CleverMonkeySort(arr):
                 if arr[j] < arr[i]:
                     return i
         return -999
+    
+    def get_random(cur, seeds = None):
+        if seeds:
+            random.seed(seeds)
+            seeds += 1
+        return random.randint(cur, len(arr) - 1), seeds
+    
     cur = 0
     while (cur := where_cur(arr)) != -999:
-        i = random.randint(cur, len(arr) - 1)
-        j = random.randint(cur, len(arr) - 1)
+        i, newSeed = get_random(cur, seeds)
+        if newSeed:
+            seeds += 1
+        j, newSeed = get_random(cur, seeds)
+        if newSeed:
+            seeds += 1
         while j == i:
-            j = random.randint(cur, len(arr) - 1)
+            j, newSeed = get_random(cur, seeds)
+            if newSeed:
+                seeds += 1
         arr[i], arr[j] = arr[j], arr[i]
     return arr
 

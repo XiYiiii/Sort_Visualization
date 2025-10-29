@@ -8,6 +8,7 @@ import pygame_gui
 import random
 import inspect
 import sort as sort_module # 将整个sort模块导入，以便我们通过名字调用函数
+import math
 from time import time
 from visualizer import Visualizer
 from tracked_array import TrackedArray
@@ -25,11 +26,13 @@ def get_sorting_algorithms():
     return algorithms
 
 def generate_random_array(n, min_val, max_val):
-    global last_input, last_output
+    global last_input, last_output, last_seed
     if last_input != [n, min_val, max_val] or not last_output:
         last_output = [random.randint(min_val, max_val) for _ in range(n)]
+        last_seed = math.sin(time())
+    elif not last_seed:
+        last_seed = math.sin(time())
     last_input = [n, min_val, max_val]
-    print(last_output)
     return last_output
 
 def parse_user_array(text):
@@ -138,11 +141,12 @@ def setup_screen(width=800, height=600, algorithms=None):
         pygame.display.flip()
 
 def main():
-    global last_input, last_output, last_function
+    global last_input, last_output, last_function, last_seed
     # 程序启动时，自动发现所有可用的排序算法
     available_algorithms = get_sorting_algorithms()
     print("Discovered sorting algorithms:", list(available_algorithms.keys()))
     
+    last_seed = None
     last_input = [100, 1, 100]
     last_output = []
     last_function = None
@@ -162,6 +166,8 @@ def main():
         cur_time = time()
         if len(sig.parameters) == 3: # 像QuickSort(arr, low, high)
             sort_function(tracked_arr, 0, len(tracked_arr) - 1)
+        elif len(sig.parameters) == 2 and last_seed: # 像MonkeySort(arr, seeds)
+            sort_function(tracked_arr, last_seed)
         else: # 像BubbleSort(arr)
             sort_function(tracked_arr)
         
