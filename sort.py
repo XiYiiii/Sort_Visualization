@@ -59,6 +59,31 @@ def ImprovedBubbleSort(arr):
     return arr
 
 
+def CombSort(arr):
+    '''
+    梳排序 (Comb Sort)。
+    这是冒泡排序的一种改进算法，引入了一个动态变化的gap。算法开始时使用一个较大的间隙来比较和交换相距较远的元素，从而快速地将乱序的元素移动到大致正确的位置。然后，这个gap按照一个固定的值（这里取1.3）不断缩小，直到最终间隙变为1。当间隙为1时，算法就退化为一次或几次常规的冒泡排序，对基本有序的数组进行最后的微调。
+    '''
+    n = len(arr)
+    gap = n
+    shrink = 1.3
+    swapped = True
+
+    while gap > 1 or swapped:
+        gap = int(gap / shrink)
+        if gap < 1:
+            gap = 1
+
+        swapped = False
+        
+        for i in range(n - gap):
+            if arr[i] > arr[i + gap]:
+                arr[i], arr[i + gap] = arr[i + gap], arr[i]
+                swapped = True
+    
+    return arr
+
+
 def CocktailShakerSort(arr):
     '''
     鸡尾酒排序（Cocktail Shaker Sort），也叫双向冒泡排序。
@@ -136,6 +161,49 @@ def ShellSort(arr):
                 j-=gap
             arr[j+gap] = temp
         gap = math.floor(gap/3)
+    return arr
+
+
+
+
+def LibrarySort(arr):
+    '''
+    图书馆排序。
+    插入排序的改进(?)，一个模拟类型的算法，会在列表的每个数字之间留出空隙，在数字想要插入进来时便可直接插入。
+    间隙是可以调整的。间隙越大则空间消耗越大，但时间会略微减少。
+    '''
+    n = len(arr)
+    if n <= 1:
+        return arr
+    gap_factor = 1.0
+    lib_size = int(n * (1 + gap_factor))
+    library = TrackedArray([None] * lib_size)
+    if n > 0:
+        library[0] = arr[0]
+    filled_count = 1
+    for i in range(1, n):
+        element_to_insert = arr[i]
+        insert_pos = 0
+        while insert_pos < lib_size and library[insert_pos] is not None and library[insert_pos] < element_to_insert:
+            insert_pos += 1
+        if library[insert_pos] is not None:
+            empty_slot = insert_pos
+            while empty_slot < lib_size and library[empty_slot] is not None:
+                empty_slot += 1
+            if empty_slot == lib_size:
+                empty_slot = lib_size - 1
+            for j in range(empty_slot, insert_pos, -1):
+                library[j] = library[j - 1]
+        library[insert_pos] = element_to_insert
+        filled_count += 1
+    # final_sorted = TrackedArray([x for x in library if x is not None])
+    # for i in range(n):
+    #     arr[i] = final_sorted[i]
+    Counts = 0
+    for x in library:
+        if x is not None:
+            arr[Counts] = x
+            Counts += 1
     return arr
 
 
@@ -509,7 +577,6 @@ def GnomeSort(arr):
             arr[cur], arr[cur-1] = arr[cur-1], arr[cur]
             cur -= 1
     return arr
-
 
 
 
