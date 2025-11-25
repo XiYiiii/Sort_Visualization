@@ -400,7 +400,7 @@ def BucketSort(arr):
     buckets = TrackedArray([[] for _ in range(bucket_count)])
     for num in arr:
         index = int((num - min_val) // bucket_size)
-        print(num, min_val, index, int((num - min_val) // bucket_size))
+        # print(num, min_val, index, int((num - min_val) // bucket_size))
         buckets[index].append(num)
     counter = 0
     for bucket in buckets:
