@@ -1,17 +1,18 @@
 # main.py
-'''
+"""
 用户交互的主程序。
 能够自动发现sort.py中的排序算法，并提供一个暗色调的设置界面。
-'''
+"""
 import pygame
 import pygame_gui
 import random
 import inspect
-import sort as sort_module # 将整个sort模块导入，以便我们通过名字调用函数
+import sort as sort_module  # 将整个sort模块导入，以便我们通过名字调用函数
 import math
 from time import time
 from visualizer import Visualizer
 from tracked_array import TrackedArray
+
 
 def get_sorting_algorithms():
     """
@@ -24,6 +25,7 @@ def get_sorting_algorithms():
         if name[0].isupper():
             algorithms[name] = func
     return algorithms
+
 
 def generate_random_array(n, min_val, max_val):
     global last_input, last_output, last_seed
@@ -39,12 +41,15 @@ def generate_random_array(n, min_val, max_val):
     last_input = [n, min_val, max_val]
     return last_output
 
+
 def parse_user_array(text):
     try:
-        if not text: return None
-        return [int(x.strip()) for x in text.split(',') if x.strip()]
+        if not text:
+            return None
+        return [int(x.strip()) for x in text.split(",") if x.strip()]
     except ValueError:
         return None
+
 
 def setup_screen(width=800, height=600, algorithms=None):
     global last_function
@@ -60,36 +65,82 @@ def setup_screen(width=800, height=600, algorithms=None):
 
     algo_names = list(algorithms.keys())
 
-    pygame_gui.elements.UILabel(relative_rect=pygame.Rect((50, 20), (230, 30)), text="1. Select Sorting Algorithm:", manager=manager)
+    pygame_gui.elements.UILabel(
+        relative_rect=pygame.Rect((50, 20), (230, 30)),
+        text="1. Select Sorting Algorithm:",
+        manager=manager,
+    )
     algo_dropdown = pygame_gui.elements.UIDropDownMenu(
         options_list=algo_names,
         # starting_option=algo_names[0] if algo_names else "",
-        starting_option=last_function if last_function else (algo_names[0] if algo_names else ""),
+        starting_option=(
+            last_function if last_function else (algo_names[0] if algo_names else "")
+        ),
         relative_rect=pygame.Rect((70, 50), (280, 40)),
-        manager=manager
+        manager=manager,
     )
 
-    pygame_gui.elements.UILabel(relative_rect=pygame.Rect((50, 110), (280, 30)), text="2. Choose Array Generation Method:", manager=manager)
+    pygame_gui.elements.UILabel(
+        relative_rect=pygame.Rect((50, 110), (280, 30)),
+        text="2. Choose Array Generation Method:",
+        manager=manager,
+    )
 
-    pygame_gui.elements.UILabel(relative_rect=pygame.Rect((70, 140), (350, 30)), text="Manual Input (comma-separated, e.g., 5,2,8,1):", manager=manager)
-    array_input = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((70, 170), (660, 40)), manager=manager)
+    pygame_gui.elements.UILabel(
+        relative_rect=pygame.Rect((70, 140), (350, 30)),
+        text="Manual Input (comma-separated, e.g., 5,2,8,1):",
+        manager=manager,
+    )
+    array_input = pygame_gui.elements.UITextEntryLine(
+        relative_rect=pygame.Rect((70, 170), (660, 40)), manager=manager
+    )
 
-    pygame_gui.elements.UILabel(relative_rect=pygame.Rect((70, 230), (700, 30)), text="Or Randomly Generate (the generated array won't change if the parameters don't gain changed):", manager=manager)
-    pygame_gui.elements.UILabel(relative_rect=pygame.Rect((70, 260), (500, 30)), text="(Hint: set `Max Value` to -1 will generate a no-repeat array):", manager=manager)
-    pygame_gui.elements.UILabel(relative_rect=pygame.Rect((90, 290), (80, 30)), text="Size:", manager=manager)
-    size_input = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((170, 290), (100, 30)), manager=manager)
+    pygame_gui.elements.UILabel(
+        relative_rect=pygame.Rect((70, 230), (700, 30)),
+        text="Or Randomly Generate (the generated array won't change if the parameters don't gain changed):",
+        manager=manager,
+    )
+    pygame_gui.elements.UILabel(
+        relative_rect=pygame.Rect((70, 260), (500, 30)),
+        text="(Hint: set `Max Value` to -1 will generate a no-repeat array):",
+        manager=manager,
+    )
+    pygame_gui.elements.UILabel(
+        relative_rect=pygame.Rect((90, 290), (80, 30)), text="Size:", manager=manager
+    )
+    size_input = pygame_gui.elements.UITextEntryLine(
+        relative_rect=pygame.Rect((170, 290), (100, 30)), manager=manager
+    )
     size_input.set_text(str(last_input[0]))
 
-    pygame_gui.elements.UILabel(relative_rect=pygame.Rect((290, 290), (80, 30)), text="Min Value:", manager=manager)
-    min_val_input = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((370, 290), (100, 30)), manager=manager)
+    pygame_gui.elements.UILabel(
+        relative_rect=pygame.Rect((290, 290), (80, 30)),
+        text="Min Value:",
+        manager=manager,
+    )
+    min_val_input = pygame_gui.elements.UITextEntryLine(
+        relative_rect=pygame.Rect((370, 290), (100, 30)), manager=manager
+    )
     min_val_input.set_text(str(last_input[1]))
 
-    pygame_gui.elements.UILabel(relative_rect=pygame.Rect((490, 290), (80, 30)), text="Max Value:", manager=manager)
-    max_val_input = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((570, 290), (100, 30)), manager=manager)
+    pygame_gui.elements.UILabel(
+        relative_rect=pygame.Rect((490, 290), (80, 30)),
+        text="Max Value:",
+        manager=manager,
+    )
+    max_val_input = pygame_gui.elements.UITextEntryLine(
+        relative_rect=pygame.Rect((570, 290), (100, 30)), manager=manager
+    )
     max_val_input.set_text(str(last_input[2]))
 
-    start_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((width // 2 - 100, 370), (200, 50)), text='Start Visualization', manager=manager)
-    message_label = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((50, 430), (700, 40)), text="", manager=manager)
+    start_button = pygame_gui.elements.UIButton(
+        relative_rect=pygame.Rect((width // 2 - 100, 370), (200, 50)),
+        text="Start Visualization",
+        manager=manager,
+    )
+    message_label = pygame_gui.elements.UILabel(
+        relative_rect=pygame.Rect((50, 430), (700, 40)), text="", manager=manager
+    )
     message_label.set_text_alpha(0)
 
     while True:
@@ -105,33 +156,49 @@ def setup_screen(width=800, height=600, algorithms=None):
                     if user_array_text:
                         arr = parse_user_array(user_array_text)
                         if arr is None:
-                            message_label.set_text("Error: Invalid format for manual array. Please check.")
+                            message_label.set_text(
+                                "Error: Invalid format for manual array. Please check."
+                            )
                             continue
                         if len(arr) < 2:
-                            message_label.set_text("Error: Array must contain at least two elements.")
+                            message_label.set_text(
+                                "Error: Array must contain at least two elements."
+                            )
                             continue
                     else:
                         try:
                             n = int(size_input.get_text())
                             min_val = int(min_val_input.get_text())
                             max_val = int(max_val_input.get_text())
-                            if n < 2 or (min_val >= max_val and not max_val == -1) or n > 100000:
-                                message_label.set_text("Error: Invalid parameters (Size > 1, Min < Max, Size <= 100000).")
+                            if (
+                                n < 2
+                                or (min_val >= max_val and not max_val == -1)
+                                or n > 100000
+                            ):
+                                message_label.set_text(
+                                    "Error: Invalid parameters (Size > 1, Min < Max, Size <= 100000)."
+                                )
                                 continue
                             arr = generate_random_array(n, min_val, max_val)
                         except (ValueError, TypeError):
-                            message_label.set_text("Error: Parameters for random generation must be valid integers.")
+                            message_label.set_text(
+                                "Error: Parameters for random generation must be valid integers."
+                            )
                             continue
 
                     if not algo_names:
-                        message_label.set_text("Error: No sorting algorithms found in sort.py.")
+                        message_label.set_text(
+                            "Error: No sorting algorithms found in sort.py."
+                        )
                         continue
 
                     selected_algo_name = algo_dropdown.selected_option[0]
                     sort_function = algorithms[selected_algo_name]
                     last_function = selected_algo_name
 
-                    message_label.set_text(f"Array generated. Size: {len(arr)}. Algorithm: {selected_algo_name}.")
+                    message_label.set_text(
+                        f"Array generated. Size: {len(arr)}. Algorithm: {selected_algo_name}."
+                    )
                     manager.draw_ui(screen)
                     pygame.display.flip()
                     pygame.time.wait(1000)
@@ -141,16 +208,17 @@ def setup_screen(width=800, height=600, algorithms=None):
             manager.process_events(event)
 
         manager.update(time_delta)
-        screen.fill(pygame.Color('#282c34'))
+        screen.fill(pygame.Color("#282c34"))
         manager.draw_ui(screen)
         pygame.display.flip()
+
 
 def main():
     global last_input, last_output, last_function, last_seed
     # 程序启动时，自动发现所有可用的排序算法
     available_algorithms = get_sorting_algorithms()
     print("Discovered sorting algorithms:", list(available_algorithms.keys()))
-    
+
     last_seed = None
     last_input = [100, 1, 100]
     last_output = []
@@ -169,25 +237,28 @@ def main():
         # 智能调用函数，处理不同参数签名
         sig = inspect.signature(sort_function)
         cur_time = time()
-        if len(sig.parameters) == 3: # 像QuickSort(arr, low, high)
+        if len(sig.parameters) == 3:  # 像QuickSort(arr, low, high)
             sort_function(tracked_arr, 0, len(tracked_arr) - 1)
-        elif len(sig.parameters) == 2 and last_seed: # 像MonkeySort(arr, seeds)
+        elif len(sig.parameters) == 2 and last_seed:  # 像MonkeySort(arr, seeds)
             sort_function(tracked_arr, last_seed)
-        else: # 像BubbleSort(arr)
+        else:  # 像BubbleSort(arr)
             sort_function(tracked_arr)
-        
+
         cur_time = time() - cur_time
 
-        print(f"Recording complete. Used {cur_time:.6f} s and captured {len(tracked_arr.history)} steps.")
+        print(
+            f"Recording complete. Used {cur_time:.6f} s and captured {len(tracked_arr.history)} steps."
+        )
 
         visualizer = Visualizer()
         result = visualizer.run(tracked_arr.history)
 
-        if result == 'quit':
+        if result == "quit":
             print("Program exited from visualizer.")
             break
 
     pygame.quit()
+
 
 if __name__ == "__main__":
     main()
